@@ -1,0 +1,2 @@
+# YW SkillFoundry has no third-party Python dependencies.
+# Requires Python >=3.10; all tools use the standard library.

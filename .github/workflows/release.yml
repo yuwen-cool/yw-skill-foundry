@@ -1,0 +1,117 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Publish YW SkillFoundry release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+
+      - name: Verify tag, VERSION, and changelog
+        shell: bash
+        run: |
+          git fetch origin main --no-tags
+          release_commit="$(git rev-parse "$GITHUB_SHA^{commit}")"
+          if ! git merge-base --is-ancestor "$release_commit" origin/main; then
+            echo "Release tags must point to a commit reachable from origin/main." >&2
+            exit 1
+          fi
+          version="$(< VERSION)"
+          test "$GITHUB_REF_NAME" = "v$version"
+          python3 - "$version" <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          version = sys.argv[1]
+          if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
+              raise SystemExit(f"invalid VERSION: {version!r}")
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          if f"## [{version}]" not in changelog:
+              raise SystemExit(f"CHANGELOG.md has no [{version}] release")
+          PY
+
+      - name: Run release regressions
+        shell: bash
+        run: |
+          for script in scripts/*.sh; do
+            bash -n "$script"
+          done
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in sorted(Path("scripts").glob("*.py")):
+              ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+          PY
+          bash scripts/regress.sh
+          python3 scripts/privacy_lint.py
+          git diff --check
+          git diff --exit-code
+
+      - name: Build deterministic archives
+        shell: bash
+        run: python3 scripts/package-release.py --source-mode tracked --output-dir dist
+
+      - name: Verify checksums and archive roots
+        shell: bash
+        run: |
+          cd dist
+          sha256sum -c SHA256SUMS
+          cd ..
+          python3 - <<'PY'
+          import tarfile
+          import zipfile
+          from pathlib import Path
+
+          version = Path("VERSION").read_text(encoding="utf-8").strip()
+          prefix = f"yw-skill-foundry-{version}/"
+          tar_path = Path("dist") / f"yw-skill-foundry-{version}.tar.gz"
+          zip_path = Path("dist") / f"yw-skill-foundry-{version}.zip"
+          with tarfile.open(tar_path, "r:gz") as archive:
+              tar_names = archive.getnames()
+          with zipfile.ZipFile(zip_path) as archive:
+              zip_names = archive.namelist()
+          for label, names in (("tar.gz", tar_names), ("zip", zip_names)):
+              if not names or any(not name.startswith(prefix) for name in names):
+                  raise SystemExit(f"{label} contains an invalid archive root")
+              if f"{prefix}SKILL.md" not in names:
+                  raise SystemExit(f"{label} does not contain SKILL.md")
+          PY
+          python3 scripts/privacy_lint.py \
+            --archive "dist/yw-skill-foundry-$(< VERSION).tar.gz" \
+            --archive "dist/yw-skill-foundry-$(< VERSION).zip"
+
+      - name: Create GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(< VERSION)"
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/yw-skill-foundry-$version.tar.gz" \
+            "dist/yw-skill-foundry-$version.zip" \
+            "dist/SHA256SUMS" \
+            --title "YW SkillFoundry $version" \
+            --generate-notes \
+            --verify-tag

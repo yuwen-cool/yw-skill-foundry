@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        python:
+          - "3.10"
+          - "3.12"
+          - "3.13"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Check Bash syntax
+        shell: bash
+        run: |
+          for script in scripts/*.sh; do
+            bash -n "$script"
+          done
+
+      - name: Check Python syntax
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in sorted(Path("scripts").glob("*.py")):
+              ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+          PY
+
+      - name: Run full regression surface
+        shell: bash
+        run: bash scripts/regress.sh
+
+      - name: Check diff cleanliness
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+
+      - name: Check public source and reachable history privacy
+        shell: bash
+        run: python3 scripts/privacy_lint.py
+
+      - name: Check executable and normal modes
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import subprocess
+
+          failures = []
+          for line in subprocess.check_output(
+              ["git", "ls-files", "--stage"], text=True
+          ).splitlines():
+              metadata, path = line.split("\t", 1)
+              mode = metadata.split()[0]
+              if path.startswith("scripts/") and path.endswith((".py", ".sh")):
+                  if mode != "100755":
+                      failures.append(f"CLI script is not executable: {path} ({mode})")
+              elif mode != "100644":
+                  failures.append(f"non-CLI file has unexpected mode: {path} ({mode})")
+          if failures:
+              raise SystemExit("\n".join(failures))
+          PY
+
+      - name: Repeat symlink rejection bite tests
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        shell: bash
+        run: bash scripts/self-check.sh
+
+      - name: Smoke-test deterministic archives
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        shell: bash
+        run: |
+          first="$(mktemp -d)"
+          second="$(mktemp -d)"
+          python3 scripts/package-release.py --source-mode tracked --output-dir "$first"
+          python3 scripts/package-release.py --source-mode tracked --output-dir "$second"
+          cmp "$first/yw-skill-foundry-$(< VERSION).tar.gz" "$second/yw-skill-foundry-$(< VERSION).tar.gz"
+          cmp "$first/yw-skill-foundry-$(< VERSION).zip" "$second/yw-skill-foundry-$(< VERSION).zip"
+          cmp "$first/SHA256SUMS" "$second/SHA256SUMS"
+          python3 scripts/privacy_lint.py \
+            --archive "$first/yw-skill-foundry-$(< VERSION).tar.gz" \
+            --archive "$first/yw-skill-foundry-$(< VERSION).zip"

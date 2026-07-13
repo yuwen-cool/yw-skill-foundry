@@ -1,0 +1,49 @@
+.DS_Store
+Thumbs.db
+
+# Credentials and local configuration
+.env*
+credentials*
+secrets*
+*.pem
+*.key
+
+# Logs, notes, and private workspaces
+*.log
+log.md
+HANDOFF.md
+private/
+notes/
+memory/
+workspaces/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Host-specific agent and editor state
+.cursor/
+.claude/
+.codex/
+.agent/
+.idea/
+.vscode/
+
+# Language and tool caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.cache/
+cache/
+caches/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.tmp
+*.swp
+*~

@@ -1,0 +1,46 @@
+name: Feature request
+description: Propose a focused YW SkillFoundry improvement
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What concrete authoring or verification failure should change?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe observable behavior, not only an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Affected area
+      options:
+        - Skill methodology
+        - Routing evaluation
+        - Contract evaluation
+        - Evidence verification
+        - Library audit
+        - Documentation or examples
+        - CI or release tooling
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: evidence
+    attributes:
+      label: Evidence expectations
+      options:
+        - label: I understand behavior or effectiveness claims need an appropriate fixture or persisted comparison.
+          required: true

@@ -1,0 +1,73 @@
+name: Bug report
+description: Report a reproducible YW SkillFoundry defect
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report security vulnerabilities here. Follow SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: YW SkillFoundry version
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS
+        - Linux
+        - Windows through WSL
+        - Other or unsupported
+    validations:
+      required: true
+  - type: input
+    id: runtimes
+    attributes:
+      label: Python and Bash versions
+      placeholder: "Python 3.12.4; GNU bash 5.2"
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Agent host
+      placeholder: "Codex, Cursor, Claude Code, or other"
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the exact command and smallest safe fixture.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I removed secrets and private evidence from this report.
+          required: true
+        - label: I searched existing issues.
+          required: true

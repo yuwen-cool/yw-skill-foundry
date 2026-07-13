@@ -1,0 +1,18 @@
+# YW SkillFoundry's own routing fixture. Cases mirror references/description-and-triggering.md §触发测试方法.
+# id = line index among non-comment lines (0-based). expect ∈ {trigger, no}.
+# "holdout": true marks cases held back while tuning the description, judged only at the
+# end to catch overfitting. Keep at least one positive + one negative in holdout.
+{"prompt": "帮我写一个新的 skill", "expect": "trigger", "kind": "exact-zh"}
+{"prompt": "这个 AI 的效果不太好，有什么办法优化它的指令？", "expect": "trigger", "kind": "fuzzy-zh"}
+{"prompt": "How do I create an agent skill?", "expect": "trigger", "kind": "exact-en"}
+{"prompt": "帮我把这段对话提炼成一个可复用的 SKILL.md", "expect": "trigger", "kind": "extract-zh"}
+{"prompt": "review this prompt engineering / instruction design doc for quality", "expect": "trigger", "kind": "fuzzy-en", "holdout": true}
+{"prompt": "帮我写一篇文章", "expect": "no", "kind": "near_neighbor"}
+{"prompt": "help me write better code", "expect": "no", "kind": "keyword_overlap"}
+{"prompt": "今天天气怎么样", "expect": "no", "kind": "unrelated"}
+{"prompt": "帮我做一张社交媒体配图", "expect": "no", "kind": "near_neighbor"}
+{"prompt": "把这个 React 组件的性能优化一下", "expect": "no", "kind": "keyword_overlap", "holdout": true}
+{"prompt": "解释一下 progressive disclosure 在 skill 里是什么意思", "expect": "no", "kind": "explain_only"}
+{"prompt": "帮我总结一下这篇讲 prompt engineering 的长文", "expect": "no", "kind": "summary_only"}
+{"prompt": "把这份 SKILL.md 从英文翻译成中文", "expect": "no", "kind": "translate_only"}
+{"prompt": "就这一次，帮我把这个工作流跑一遍就行，别做成 skill", "expect": "no", "kind": "one_off_non_skill", "holdout": true}
