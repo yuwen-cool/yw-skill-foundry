@@ -1,5 +1,5 @@
-name: Bug report
-description: Report a reproducible YW SkillFoundry defect
+name: Bug 反馈
+description: 报告可复现的问题
 title: "[Bug]: "
 labels:
   - bug
@@ -7,67 +7,67 @@ body:
   - type: markdown
     attributes:
       value: |
-        Do not report security vulnerabilities here. Follow SECURITY.md.
+        安全漏洞请不要在这里公开提，按 SECURITY.md 私下报告。
   - type: input
     id: version
     attributes:
-      label: YW SkillFoundry version
+      label: YW SkillFoundry 版本
       placeholder: "2.0.0"
     validations:
       required: true
   - type: dropdown
     id: platform
     attributes:
-      label: Platform
+      label: 系统
       options:
         - macOS
         - Linux
-        - Windows through WSL
-        - Other or unsupported
+        - Windows（经 WSL）
+        - 其他 / 暂不支持
     validations:
       required: true
   - type: input
     id: runtimes
     attributes:
-      label: Python and Bash versions
+      label: Python 和 Bash 版本
       placeholder: "Python 3.12.4; GNU bash 5.2"
     validations:
       required: true
   - type: input
     id: host
     attributes:
-      label: Agent host
-      placeholder: "Codex, Cursor, Claude Code, or other"
+      label: 用的宿主
+      placeholder: "Codex、Cursor、Claude Code，或其他"
   - type: textarea
     id: reproduction
     attributes:
-      label: Minimal reproduction
-      description: Include the exact command and smallest safe fixture.
+      label: 最小复现步骤
+      description: 写清命令，尽量附上可公开的最小材料。
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
+      label: 期望结果
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: Actual behavior
+      label: 实际结果
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
-      label: Relevant output
+      label: 相关输出
       render: shell
   - type: checkboxes
     id: checks
     attributes:
-      label: Checklist
+      label: 提交前确认
       options:
-        - label: I removed secrets and private evidence from this report.
+        - label: 已去掉密钥、私人证据和不可公开内容
           required: true
-        - label: I searched existing issues.
+        - label: 已搜索过现有 issue
           required: true

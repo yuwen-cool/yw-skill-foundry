@@ -1,5 +1,5 @@
-name: Feature request
-description: Propose a focused YW SkillFoundry improvement
+name: 功能建议
+description: 提出一项具体、可落地的改进
 title: "[Feature]: "
 labels:
   - enhancement
@@ -7,40 +7,40 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: Problem
-      description: What concrete authoring or verification failure should change?
+      label: 现在哪里别扭
+      description: 写具体使用问题，比如写不好、审不清、验不动，而不是空泛愿望。
     validations:
       required: true
   - type: textarea
     id: outcome
     attributes:
-      label: Desired outcome
-      description: Describe observable behavior, not only an implementation.
+      label: 希望变成什么样
+      description: 描述用户能看到的结果，不必先指定实现方案。
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternatives considered
+      label: 想过的其他办法
   - type: dropdown
     id: scope
     attributes:
-      label: Affected area
+      label: 主要影响哪一块
       options:
-        - Skill methodology
-        - Routing evaluation
-        - Contract evaluation
-        - Evidence verification
-        - Library audit
-        - Documentation or examples
-        - CI or release tooling
-        - Other
+        - Skill 写法与方法论
+        - 触发评估
+        - 契约评估
+        - 证据校验
+        - Skill 库审计
+        - 文档或示例
+        - CI / 发布工具
+        - 其他
     validations:
       required: true
   - type: checkboxes
     id: evidence
     attributes:
-      label: Evidence expectations
+      label: 关于证据
       options:
-        - label: I understand behavior or effectiveness claims need an appropriate fixture or persisted comparison.
+        - label: 我理解：行为或效果相关主张，需要对应的 fixture 或可复查对比
           required: true

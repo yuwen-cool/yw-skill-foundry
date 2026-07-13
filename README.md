@@ -1,41 +1,32 @@
 # YW SkillFoundry
 
-Design, evaluate, and improve production-grade Agent Skills with a reusable
-method, runnable checks, and auditable comparison evidence.
+帮你把 Agent Skill 写好、审清楚、改到真正有用。
 
-YW SkillFoundry is itself an Agent Skill. It helps authors decide whether a skill
-is the right vehicle, write precise routing metadata and instructions, choose
-between a lightweight Scaffold and a Production track, and verify claims
-without treating self-attestation as evidence.
+AI 会不会按你想的方式做事，很大程度取决于 skill 写得怎么样。YW SkillFoundry 本身也是一个 skill：告诉你什么时候该做 skill，怎么写触发更准、指令更贴需求，以及怎么检查它是不是在糊弄你。
 
-## Evidence scope
+适合这些场景：
 
-This repository bundles one privacy-safe routing evidence set:
+- 从零写一个新 skill，准备拿去用
+- 现有 skill 效果不好，想定位问题并优化
+- 合并前 / 发布前，给 skill 做一轮审查
+- 把一段好用的对话，提炼成可复用的 skill
 
-- `evals/routing-2026-07-13-v3/` records a 14-case routing optimization.
+不适合：写业务代码、搭多智能体运行时、补模型本身做不到的能力。那些不是改 `SKILL.md` 能解决的。
 
-This fixture-specific evidence supports only the recorded routing cases. It
-does not prove universal effectiveness, provide Production run-compare
-evidence for 2.0.0, or validate every third-party skill produced with this
-project. Raw run IDs, judge IDs, transcripts, personal logs, machine
-paths, and private snapshots are not published. See `evals/README.md` and
-`PRIVACY.md`.
+## 它到底解决什么
 
-## Requirements and hosts
+很多人会写一堆规则，然后说「这个 skill 应该挺好」。真正难的是另一件事：它会不会被触发、触发后会不会按契约做事、相对不带 skill 的基线有没有更好。
 
-- Python 3.10 or later, standard library only
-- Bash 3.2 or later
-- macOS or Linux
-- Codex, Cursor, Claude Code, or another host implementing the Agent Skills
-  `SKILL.md` convention
+YW SkillFoundry 把这件事拆开：
 
-WSL is expected to work but is not currently covered by CI. Native Windows
-PowerShell and `cmd.exe` are not supported by the Bash tooling.
+1. **写**：Scaffold 先做出能试用的版本；要上线再走 Production
+2. **审**：按结构、触发、契约、证据边界打分，不靠自我感觉
+3. **改**：效果不好时先诊断，再定点改，不盲目堆规则
+4. **验**：用可跑脚本和可复查的 fixture，而不是口头保证
 
-## Install
+## 安装
 
-Clone or copy this repository directly into a host's skills directory so the
-repository root remains the skill root:
+把仓库放到宿主的 skills 目录，目录名必须是 `yw-skill-foundry`：
 
 ```bash
 # Codex
@@ -44,25 +35,19 @@ git clone https://github.com/yuwen-cool/yw-skill-foundry.git ~/.codex/skills/yw-
 # Cursor
 git clone https://github.com/yuwen-cool/yw-skill-foundry.git ~/.cursor/skills/yw-skill-foundry
 
-# Claude Code (project-local)
+# Claude Code（项目级）
 git clone https://github.com/yuwen-cool/yw-skill-foundry.git .claude/skills/yw-skill-foundry
-
-# Generic Agent Skills host
-git clone https://github.com/yuwen-cool/yw-skill-foundry.git <skills-root>/yw-skill-foundry
 ```
 
-If you already cloned it elsewhere, copy or symlink the complete repository
-directory into the host's skills root. Confirm that `SKILL.md` is at
-`yw-skill-foundry/SKILL.md`. The directory name is part of the portable skill
-identity and validators intentionally reject another parent-directory name.
+装好后，直接跟 AI 说「帮我写一个 skill」或「看看这个 skill 写得怎么样」即可。
 
-## Quickstart
+## 先跑通一次
 
-Ask your agent for a reusable instruction artifact, for example:
+比如：
 
-> Create an Agent Skill that reviews database migrations before deployment.
+> 帮我写一个上线前审查数据库 migration 的 Agent Skill。
 
-Then validate the result:
+写完后可以本地检查：
 
 ```bash
 python3 scripts/trigger_eval.py lint --skill path/to/new-skill
@@ -70,103 +55,79 @@ bash scripts/validate-skill.sh path/to/new-skill
 python3 scripts/citation_lint.py --skill path/to/new-skill
 ```
 
-Draft routing cases before tuning the body. Start from
-`evals/trigger_cases.example.jsonl`, generate an unlabeled worksheet in a fresh
-context, and score the returned judgments with `trigger_eval.py`.
+触发测试建议先写案例，再改正文。可从 `evals/trigger_cases.example.jsonl` 起步。
 
-## Scaffold vs Production
+## Scaffold 和 Production
 
-**Scaffold** is the default first usable version: focused frontmatter, an
-opening statement, workflow, hard rules, output format, and a 3-positive /
-3-negative routing fixture with holdouts. It must be labeled unproven trial use.
+- **Scaffold**：默认先做这个。结构完整、能触发、能按契约输出，适合标成「试用」。
+- **Production**：在 Scaffold 之上补可复查证据，比如对比基线、重复跑、盲评和回归。结构检查通过不等于效果已被证明。
 
-**Production** adds only evidence-backed controls: output contracts, persisted
-comparative content evidence, repeated matched runs, blind position-swapped
-judging, and regression gates. A structural score is not effectiveness proof.
+## 环境要求
 
-## Tooling
+- Python 3.10+（只用标准库）
+- Bash 3.2+
+- macOS 或 Linux
+- 支持 Agent Skills / `SKILL.md` 约定的宿主（Codex、Cursor、Claude Code 等）
 
-| Tool | Purpose |
+WSL 一般能用，但目前没有进 CI。原生 Windows `PowerShell` / `cmd` 不支持这套 Bash 工具。
+
+## 工具一览
+
+| 工具 | 做什么 |
 |---|---|
-| `scripts/validate-skill.sh` | Structural, metadata, reference, secret, and risky-command checks |
-| `scripts/trigger_eval.py` | Routing lint, blinded worksheets, scoring, and bound reports |
-| `scripts/contract_eval.py` | Deterministic and explicitly graded output-contract checks |
-| `scripts/evidence.py` | Create and verify immutable run-compare manifests |
-| `scripts/skill_library_audit.py` | Recursive set-level routing and collision audit |
-| `scripts/citation_lint.py` | Scan public body files with an optional external blocklist |
-| `scripts/privacy_lint.py` | Reject private paths, emails, raw IDs, sensitive files, and secrets in source/history/archives |
-| `scripts/self-check.sh` | Positive and bite tests for the checker suite |
-| `scripts/regress.sh` | Full local regression surface |
-| `scripts/package-release.py` | Build deterministic versioned tar.gz and zip archives |
+| `scripts/validate-skill.sh` | 检查结构、元数据、引用和常见风险 |
+| `scripts/trigger_eval.py` | 触发面 lint、盲测工作表、打分 |
+| `scripts/contract_eval.py` | 检查产出是否满足约定 |
+| `scripts/evidence.py` | 创建和校验 run-compare 证据包 |
+| `scripts/skill_library_audit.py` | 检查一组 skill 的触发冲突 |
+| `scripts/citation_lint.py` | 扫描正文里不该出现的私有引用 |
+| `scripts/privacy_lint.py` | 扫描源码、历史和发布包里的隐私风险 |
+| `scripts/regress.sh` | 一键跑完整本地回归 |
 
-New protocol artifacts use `yw-skill-foundry.*` schema IDs. Verification
-remains backward-compatible with legacy `skill-foundry.*` and `skill-craft.*`
-artifacts; see `references/evidence-schema.md`.
+新产出的协议 ID 使用 `yw-skill-foundry.*`；旧的 `skill-foundry.*` / `skill-craft.*` 仍可校验。细节见 `references/evidence-schema.md`。
 
-## Release archives
-
-`package-release.py` builds `yw-skill-foundry-<version>.tar.gz` and `.zip`
-from an explicit end-user allowlist. Archives include the skill, license,
-README, version, dependency declaration, references, scripts, templates,
-examples, selected public docs, and sanitized routing fixtures. They exclude
-`.github`, Git/editor configuration, unknown tracked paths, caches, and private
-artifacts. Every candidate under an allowed release directory is privacy
-checked even when it is not allowlisted, and CI scans the completed archives.
-
-## Repository structure
+## 仓库里有什么
 
 ```text
-SKILL.md              Active public skill
-references/           Conditional methodology and protocol references
-scripts/              Dependency-free validation and evidence tools
-templates/            Scaffold and Production starters
-examples/             Worked examples
-evals/                Privacy-safe routing fixtures and evidence
-.github/               CI, release automation, and community templates
+SKILL.md        主 skill（给 AI 读的工作流）
+references/     按需加载的方法论与协议
+scripts/        校验与证据工具
+templates/      Scaffold / Production 模板
+examples/       可对照的写法示例
+evals/          脱敏后的触发测试材料
 ```
 
-## Verify this release
+发布归档只打进终端用户需要的文件，不含 `.github`、私有日志、机器路径和原始会话 ID。政策见 `PRIVACY.md`。
+
+## 证据边界（说清楚，避免误读）
+
+仓库里附带一份脱敏的触发优化记录：`evals/routing-2026-07-13-v3/`（14 个案例）。
+
+它只说明那一组案例上的触发结果，不证明「用了就一定更好」，也不等于 2.0.0 已有 Production 级效果证据。原始 run/judge ID、对话 transcript、个人日志和私有快照都不会公开。
+
+## 发布前自检
 
 ```bash
 bash scripts/regress.sh
 python3 scripts/privacy_lint.py
 git diff --check
-git ls-files -z | python3 -c 'import os,sys; bad=[p for p in sys.stdin.buffer.read().split(b"\0") if p.endswith((b".pyc",b".DS_Store")) or b"__pycache__" in p]; raise SystemExit(bool(bad))'
 ```
 
-## Standards and research boundaries
+## 标准与研究引用
 
-- [Agent Skills specification](https://agentskills.io/specification.md) defines
-  the portable `SKILL.md` format and progressive-disclosure model.
-- [Anthropic's Agent Skills engineering
-  overview](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
-  explains metadata discovery and conditional resource loading.
-- [Liu et al., *Lost in the Middle* (TACL
-  2024)](https://aclanthology.org/2024.tacl-1.9/) shows position-dependent
-  degradation in controlled long-context tasks. It does not establish a
-  universal token threshold or fixed accuracy loss.
-- [Meincke et al., *Persuading large language models to comply with
-  objectionable requests* (PNAS
-  2026)](https://doi.org/10.1073/pnas.2535868123) measures persuasion effects
-  in a safety-compliance setting. YW SkillFoundry treats it only as indirect
-  evidence that framing can affect model behavior, never as a measured Skill
-  compliance gain.
+- [Agent Skills 规范](https://agentskills.io/specification.md)
+- [Anthropic：用 Agent Skills 装备真实世界中的 agent](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+- [Lost in the Middle (TACL 2024)](https://aclanthology.org/2024.tacl-1.9/)：长上下文位置效应，不是普适阈值阈值
+- [Meincke et al. (PNAS 2026)](https://doi.org/10.1073/pnas.2535868123)：说服会影响模型顺从，这里只当间接参考，不当 skill 合规增益证明
 
-## Security and limitations
+## 安全与限制
 
-The tools reject output symlinks, accidental overwrites, path escapes in
-evidence, malformed metadata, and common secret patterns. They do not sandbox
-an agent, authenticate provider run IDs, establish rubric validity, or prove
-that an instruction is safe for every environment. Review generated skills and
-scripts before execution. See `SECURITY.md` for vulnerability reporting and
-`PRIVACY.md` for the publication policy.
+工具会拦 symlink 覆盖、路径逃逸、畸形元数据和常见密钥形态，但不会替你沙箱执行 agent，也不会保证生成 skill 在所有环境都安全。用之前先自己看一遍。漏洞报告见 `SECURITY.md`，公开内容政策见 `PRIVACY.md`。
 
-## Contributing
+## 参与贡献
 
-Read `CONTRIBUTING.md`, `PRIVACY.md`, and `CODE_OF_CONDUCT.md`. Changes to
-routing or behavior should include the smallest privacy-safe fixture or bite
-test. Do not publish raw provider/session identifiers or private snapshots.
+见 `CONTRIBUTING.md`。改触发或行为时，请附上最小、可公开的 fixture 或 bite test；不要提交原始 provider/session ID 或私有快照。
 
 ## License
 
-MIT © 2026 yuwen-cool. See `LICENSE`.
+MIT © 2026 yuwen-cool

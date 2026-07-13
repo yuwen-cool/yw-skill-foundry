@@ -7,9 +7,11 @@ compatibility: "Install in a parent directory named yw-skill-foundry. Bundled to
 
 # YW SkillFoundry
 
-A skill is not a prompt. It is a design system for AI behavior — architecture, vocabulary, constraints, and craft working together to make domain-specific behavior more repeatable. Whether it improves real outcomes must be demonstrated against a baseline; the document itself is never proof.
+用来把 Agent Skill 写好、审清楚、改到真正有用：新写、审查、优化、从对话提炼，都围绕「更贴需求、更能发挥效果」。
 
-The difference between a mediocre skill and an excellent one is not more rules. It is sharper language, tighter structure, and the discipline to make every sentence do exactly one job. A generation skill (writing, design, image) controls output quality. A methodology skill (debugging, reviewing, researching) changes how AI thinks. They share structure but differ in every design decision — interaction model, mode system, failure handling, and language voice.
+A skill is not a prompt. It is a design system for AI behavior: architecture, vocabulary, constraints, and craft working together so domain-specific behavior is more repeatable. Whether it improves real outcomes must be shown against a baseline; the document itself is never proof.
+
+The difference between a mediocre skill and an excellent one is not more rules. It is sharper language, tighter structure, and the discipline to make every sentence do one job. A generation skill (writing, design, image) controls output quality. A methodology skill (debugging, reviewing, researching) changes how AI thinks. They share structure but differ in interaction model, mode system, failure handling, and language voice.
 
 ## Core Principle
 
