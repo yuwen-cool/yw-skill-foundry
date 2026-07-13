@@ -764,6 +764,26 @@ for function, name, value in checks:
         raise SystemExit(f"{function.__module__} changed raced destination bytes")
 PYEOF
 
+# ensure-log.sh must create log.md from the template when missing, and must
+# never touch an existing log.md (guards the "don't overwrite user files" rule).
+ENSURE_LOG_ROOT="$TMP/ensure-log"
+mkdir -p "$ENSURE_LOG_ROOT/scripts"
+cp "$ROOT/scripts/ensure-log.sh" "$ENSURE_LOG_ROOT/scripts/ensure-log.sh"
+printf 'template placeholder\n' > "$ENSURE_LOG_ROOT/log.md.example"
+expect_exit 0 "ensure-log.sh creates log.md from template when missing" -- bash "$ENSURE_LOG_ROOT/scripts/ensure-log.sh"
+if [[ -f "$ENSURE_LOG_ROOT/log.md" ]] && diff -q "$ENSURE_LOG_ROOT/log.md" "$ENSURE_LOG_ROOT/log.md.example" >/dev/null 2>&1; then
+  ok "ensure-log.sh copied template contents"
+else
+  bad "ensure-log.sh did not create log.md matching the template"
+fi
+printf 'user wrote this — must survive\n' > "$ENSURE_LOG_ROOT/log.md"
+expect_exit 0 "ensure-log.sh exits 0 when log.md already exists" -- bash "$ENSURE_LOG_ROOT/scripts/ensure-log.sh"
+if [[ "$(cat "$ENSURE_LOG_ROOT/log.md")" == "user wrote this — must survive" ]]; then
+  ok "ensure-log.sh never overwrites an existing log.md"
+else
+  bad "ensure-log.sh overwrote an existing log.md"
+fi
+
 echo
 echo "Result: $FAIL FAIL / $PASS PASS"
 if [[ "$FAIL" -gt 0 ]]; then
