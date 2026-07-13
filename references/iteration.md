@@ -206,10 +206,11 @@ AI 使用 skill 时的失败分三大类，诊断策略不同：
 `PRIVACY.md`。
 
 不用另外找地方放：这份仓库自带的 `.gitignore` 已经排除了 `log.md`、
-`HANDOFF.md`、`private/`、`notes/`、`memory/`、`workspaces/`。直接在
-装好的 skill 目录里建一个 `log.md` 写你自己的迭代记录就行——即使你把
-这份 skill 纳入自己的 Git 仓库并推送，这些文件也不会被带上去。想验证，
-跑一遍 `python3 scripts/privacy_lint.py`。
+`HANDOFF.md`、`private/`、`notes/`、`memory/`、`workspaces/`。首次用
+`bash scripts/ensure-log.sh` 从 `log.md.example` 生成一份 `log.md`；这个
+脚本只在文件不存在时才创建，已有内容永远不会被覆盖，之后每次更新都能
+放心重跑。即使你把这份 skill 纳入自己的 Git 仓库并推送，这些文件也不会
+被带上去。想验证，跑一遍 `python3 scripts/privacy_lint.py`。
 
 ### 改进来源优先级
 

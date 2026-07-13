@@ -129,9 +129,17 @@ evals/          脱敏后的触发测试材料
 
 它只说明那一组案例上的触发结果，不证明「用了就一定更好」，也不等于 2.0.0 已有 Production 级效果证据。原始 run/judge ID、对话 transcript、个人日志和私有快照都不会公开。
 
-## 你自己的迭代记录不会被误传
+## 你自己的迭代记录不会被误传，也不会被更新覆盖
 
-装好之后你大概会想记点东西——什么场景失败了、改了哪一版。直接在这个 skill 目录里建 `log.md` 就行，不用额外配置：仓库自带的 `.gitignore` 已经排除了 `log.md`、`HANDOFF.md`、`private/`、`notes/`、`memory/`、`workspaces/`。即使你把这份 skill 也纳入自己的 Git 仓库并推送，这些文件也不会被带上去。想确认，跑一遍 `python3 scripts/privacy_lint.py`。
+装好之后你大概会想记点东西——什么场景失败了、改了哪一版。仓库带了一份模板，首次用的时候跑一下：
+
+```bash
+bash scripts/ensure-log.sh
+```
+
+它只在 `log.md` 不存在时才从 `log.md.example` 创建一份；只要 `log.md` 已经存在，无论你写了什么，这个命令都不会碰它——以后每次拉更新都可以放心重跑。`log.md`、`HANDOFF.md`、`private/`、`notes/`、`memory/`、`workspaces/` 都在仓库自带的 `.gitignore` 里，即使你把这份 skill 也纳入自己的 Git 仓库并推送，它们也不会被带上去。想确认，跑一遍 `python3 scripts/privacy_lint.py`。
+
+更新这份 skill 时（`git pull` 或重新同步方法论文件），这些文件不会被覆盖——它们本来就不受版本控制。唯一要小心的场景是「删掉整个目录重新装」：那种情况下先把 `log.md` 挪出来，装完再放回去，或者直接用 `git pull` 就地更新而不是重新克隆。
 
 ## 发布前自检
 
