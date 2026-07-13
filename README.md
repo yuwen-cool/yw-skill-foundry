@@ -129,6 +129,10 @@ evals/          脱敏后的触发测试材料
 
 它只说明那一组案例上的触发结果，不证明「用了就一定更好」，也不等于 2.0.0 已有 Production 级效果证据。原始 run/judge ID、对话 transcript、个人日志和私有快照都不会公开。
 
+## 你自己的迭代记录不会被误传
+
+装好之后你大概会想记点东西——什么场景失败了、改了哪一版。直接在这个 skill 目录里建 `log.md` 就行，不用额外配置：仓库自带的 `.gitignore` 已经排除了 `log.md`、`HANDOFF.md`、`private/`、`notes/`、`memory/`、`workspaces/`。即使你把这份 skill 也纳入自己的 Git 仓库并推送，这些文件也不会被带上去。想确认，跑一遍 `python3 scripts/privacy_lint.py`。
+
 ## 发布前自检
 
 ```bash
