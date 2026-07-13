@@ -1,24 +1,23 @@
-# Contributing to YW SkillFoundry
+# 参与贡献
 
-Thank you for improving YW SkillFoundry.
+谢谢你愿意改进 YW SkillFoundry。
 
-## Before opening a change
+这个项目的目标很直接：让人把 skill 写得更贴需求、更容易触发、也更容易验证效果。贡献时优先想用户会怎么用，而不是只堆内部抽象。
 
-1. Search existing issues and pull requests.
-2. Keep the change focused and explain the user-visible reason.
-3. Publish only privacy-safe fixtures. Never commit raw provider/session IDs,
-   transcripts, personal logs, machine paths, or private snapshots.
-4. Do not add third-party Python dependencies.
+## 提交前
 
-## Development requirements
+1. 先搜一下现有 issue / PR，避免重复
+2. 变更尽量聚焦，说清楚对用户有什么用
+3. 只提交可公开的 fixture；不要提交原始 provider/session ID、transcript、个人日志、机器路径或私有快照
+4. 不要引入第三方 Python 依赖
 
-- Python 3.10 or later
-- Bash 3.2 or later
-- macOS or Linux; WSL is expected to work but is not currently CI-verified
+## 开发环境
 
-## Validation
+- Python 3.10+
+- Bash 3.2+
+- macOS 或 Linux；WSL 通常可用，但尚未纳入 CI
 
-Run:
+## 本地验证
 
 ```bash
 bash scripts/regress.sh
@@ -26,23 +25,17 @@ python3 scripts/privacy_lint.py
 git diff --check
 ```
 
-Changes to parsers, output writers, path handling, or evidence verification
-need focused positive and bite tests in `scripts/self-check.sh`. Changes to
-routing metadata need train and holdout cases. Content-effect claims need new
-privacy-safe comparative evidence. Evidence claims must remain bounded to the
-published fixture.
+- 改解析器、写文件、路径处理、证据校验：在 `scripts/self-check.sh` 补正向和咬测
+- 改触发元数据：同时补 train / holdout 案例
+- 声称内容效果变好：补可公开的对比证据，并写清边界
 
-## Pull requests
+## Pull Request
 
-Describe:
+请写明：
 
-- what changed and why,
-- which risks were considered,
-- exact verification commands and results,
-- whether evidence scope or compatibility changed.
+- 改了什么，为什么改
+- 考虑过哪些风险
+- 跑过哪些验证
+- 有没有触及隐私 / 证据边界
 
-Use clear commit messages and keep generated caches, local credentials, and
-editor or agent state out of the repository. Read and follow `PRIVACY.md`
-before adding fixtures, examples, or release artifacts.
-
-By participating, you agree to follow `CODE_OF_CONDUCT.md`.
+更完整的社区约定见 `CODE_OF_CONDUCT.md` 和 `PRIVACY.md`。

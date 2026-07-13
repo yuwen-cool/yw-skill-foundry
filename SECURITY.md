@@ -1,38 +1,33 @@
-# Security Policy
+# 安全政策
 
-## Supported versions
+## 支持范围
 
-Security fixes are applied to the latest released version of YW SkillFoundry.
+安全修复会应用到 YW SkillFoundry 最新正式版。
 
-## Report a vulnerability
+## 怎么报告
 
-Do not open a public issue for an undisclosed vulnerability. Use GitHub's
-private vulnerability reporting feature for this repository. If it is
-unavailable, contact the repository owner privately through the contact method
-listed on their GitHub profile.
+不要为未公开漏洞开公开 issue。请用这个仓库的 GitHub 私下漏洞报告功能。如果不可用，通过仓库所有者 GitHub 主页上的联系方式私下联系。
 
-Include:
+请尽量写上：
 
-- the affected file and version,
-- a minimal reproduction,
-- the security impact,
-- any known mitigations.
+- 影响文件和版本
+- 最小复现
+- 安全影响
+- 已知缓解办法
 
-You should receive an acknowledgement within 7 days. Please allow time for a
-fix and coordinated disclosure.
+一般会在 7 天内确认收到。请给修复和协调披露留一点时间。
 
-## Scope
+## 范围
 
-Useful reports include path traversal, symlink attacks, unsafe overwrites,
-evidence-verification bypasses, command injection, secret disclosure, and CI or
-release-archive integrity failures.
+我们关心：
 
-Generated skill quality, model behavior, rubric disagreement, and provider
-availability are generally correctness or support issues unless they produce a
-concrete security impact.
+- 校验脚本里的命令注入、路径逃逸、symlink 覆盖
+- 证据校验被绕过
+- 发布包或仓库里泄漏密钥、私人路径、原始会话标识
+- CI / Release 流程里的安全风险
 
-## Safe use
+不在范围内的包括：宿主 agent 本身的通用行为风险、第三方模型输出质量，以及用户自己生成 skill 在外部系统里被滥用。
 
-YW SkillFoundry does not sandbox agents or generated scripts. Review instructions
-and executable files before use, run with least privilege, and do not place
-secrets in skill bodies or evidence artifacts.
+## 额外说明
+
+YW SkillFoundry 不会替 agent 或生成脚本做沙箱。请先审查指令和脚本，再执行。也不要在 skill 正文或证据材料里塞密钥。

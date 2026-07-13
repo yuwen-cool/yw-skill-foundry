@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Security vulnerability
+  - name: 安全漏洞
     url: https://github.com/yuwen-cool/yw-skill-foundry/security/advisories/new
-    about: Report vulnerabilities privately
-  - name: Support guidance
+    about: 私下报告安全问题，不要公开发帖
+  - name: 使用与支持说明
     url: https://github.com/yuwen-cool/yw-skill-foundry/blob/main/SUPPORT.md
-    about: Read supported environments and issue guidance
+    about: 先看支持范围和提 issue 的建议

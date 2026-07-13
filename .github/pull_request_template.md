@@ -1,32 +1,32 @@
-## Summary
+## 改了什么
 
 -
 
-## Why
+## 为什么改
 
 -
 
-## Verification
+## 验证
 
 - [ ] `bash scripts/regress.sh`
 - [ ] `python3 scripts/privacy_lint.py`
 - [ ] `git diff --check`
-- [ ] Added or updated focused fixtures/bite tests where behavior changed
-- [ ] Followed `PRIVACY.md` for every public artifact
+- [ ] 行为有变时，补了对应 fixture / bite test
+- [ ] 公开材料都按 `PRIVACY.md` 处理过
 
-Commands and exact results:
+命令和结果：
 
 ```text
 
 ```
 
-## Compatibility and evidence
+## 兼容与证据
 
-- [ ] No protocol compatibility change
-- [ ] Compatibility change is documented
-- [ ] No effectiveness claim added
-- [ ] New claim is backed by appropriately scoped persisted evidence
+- [ ] 没有改协议兼容性
+- [ ] 兼容性变更已写进文档
+- [ ] 没有新增效果主张
+- [ ] 新增主张有对应范围、可复查证据
 
-## Security
+## 安全与隐私
 
-- [ ] No secrets, private paths/emails, raw provider/session/agent IDs, logs, transcripts, or private snapshots added
+- [ ] 没有提交密钥、私人路径/邮箱、原始 provider/session/agent ID、日志、transcript 或私有快照
