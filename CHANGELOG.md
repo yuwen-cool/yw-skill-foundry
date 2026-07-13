@@ -17,6 +17,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Limited bundled evidence claims to the privacy-safe routing fixture included
   in this release; 2.0.0 does not claim Production run-compare evidence.
 - Replaced tracked-file packaging with an explicit end-user release allowlist.
+- Updated the pinned GitHub checkout action to the current Node.js 24 release.
 
 ### Security
 

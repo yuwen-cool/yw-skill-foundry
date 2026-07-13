@@ -35,7 +35,9 @@ HOME_PATH_RX = re.compile(
     + r"|[A-Za-z]:[\\/](?:Users|Documents[ ]and[ ]Settings)[\\/][^\\/\s]+"
     + ")"
 )
-EMAIL_RX = re.compile(r"(?<![\w.+-])[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}(?![\w.-])")
+EMAIL_RX = re.compile(
+    r"(?<![\w.+\[\]-])[\w.+\[\]-]+@[\w.-]+\.[A-Za-z]{2,}(?![\w.-])"
+)
 UUID_RX = re.compile(
     r"(?i)(?<![0-9a-f])"
     r"[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-"
@@ -178,6 +180,7 @@ def generic_email_allowlist() -> set[str]:
         "project" + "@" + "example.com",
         "maintainer" + "@" + "example.org",
         "security" + "@" + "example.invalid",
+        "support" + "@" + "github.com",
     }
 
 
@@ -186,10 +189,15 @@ def email_allowed(value: str) -> bool:
     if lowered in generic_email_allowlist():
         return True
     local, _, domain = lowered.rpartition("@")
-    if lowered == "noreply" + "@" + "github.com":
+    if not local:
+        return False
+    # GitHub system addresses are public platform metadata, not personal contacts.
+    if domain == "github.com" and local in {"noreply", "support"}:
         return True
+    # Only the id-prefixed GitHub noreply form is allowed, including Dependabot
+    # addresses such as 12345+dependabot[bot]@users.noreply.github.com.
     return domain == "users.noreply.github.com" and bool(
-        re.fullmatch(r"[0-9]+\+[a-z0-9](?:[a-z0-9-]{0,38})", local)
+        re.fullmatch(r"[0-9]+\+[A-Za-z0-9][\w.\[\]-]{0,64}", local)
     )
 
 
@@ -558,13 +566,16 @@ def self_test() -> int:
 
     good_mail = "project" + "@" + "example.com"
     github_mail = "noreply" + "@" + "github.com"
+    github_support_mail = "support" + "@" + "github.com"
     github_user_mail = "12345+project" + "@" + "users.noreply.github.com"
+    github_bot_mail = "49699333+dependabot[bot]" + "@" + "users.noreply.github.com"
     clean = scan_record(
         "clean",
         "README.md",
         (
             f"Public fixture contacts: {good_mail}, {github_mail}, "
-            f"{github_user_mail}. A run and judge can inspect an agent session. "
+            f"{github_support_mail}, {github_user_mail}, {github_bot_mail}. "
+            "A run and judge can inspect an agent session. "
             "Release labels run-a1 and judge-b1 are public. "
             + ('"' + "run_id" + '": "' + "run-a1" + '", ')
             + ('"' + "judge_id" + '": "' + "judge-b1" + '"')
