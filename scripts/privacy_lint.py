@@ -181,6 +181,8 @@ def generic_email_allowlist() -> set[str]:
         "maintainer" + "@" + "example.org",
         "security" + "@" + "example.invalid",
         "support" + "@" + "github.com",
+        # Public Cursor agent co-author trailer; not a personal maintainer contact.
+        "cursoragent" + "@" + "cursor.com",
     }
 
 
@@ -569,12 +571,14 @@ def self_test() -> int:
     github_support_mail = "support" + "@" + "github.com"
     github_user_mail = "12345+project" + "@" + "users.noreply.github.com"
     github_bot_mail = "49699333+dependabot[bot]" + "@" + "users.noreply.github.com"
+    cursor_agent_mail = "cursoragent" + "@" + "cursor.com"
     clean = scan_record(
         "clean",
         "README.md",
         (
             f"Public fixture contacts: {good_mail}, {github_mail}, "
-            f"{github_support_mail}, {github_user_mail}, {github_bot_mail}. "
+            f"{github_support_mail}, {github_user_mail}, {github_bot_mail}, "
+            f"{cursor_agent_mail}. "
             "A run and judge can inspect an agent session. "
             "Release labels run-a1 and judge-b1 are public. "
             + ('"' + "run_id" + '": "' + "run-a1" + '", ')

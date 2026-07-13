@@ -16,6 +16,12 @@ project artifacts:
 - private skill snapshots or private workspaces,
 - host-specific agent state, caches, or editor state.
 
+Allowed platform metadata is not treated as personal contact data: GitHub
+`noreply` / `support` addresses, id-prefixed `users.noreply.github.com`
+addresses (including Dependabot), and the public Cursor agent co-author
+address. Maintainer commits and annotated tags must use a GitHub noreply
+identity rather than a personal mailbox.
+
 Use `python3 scripts/privacy_lint.py` before publication. In a Git repository
 the default scan includes current public files plus reachable commit and tag
 metadata and blobs. `--working-tree-only` exists solely for a deliberate
